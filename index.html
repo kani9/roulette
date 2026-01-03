@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>画像ルーレット</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: sans-serif;
+    }
+	img {
+	  width: 300px;
+	  height: auto;
+	  border: 2px solid #333;
+	}
+    button {
+      font-size: 16px;
+      margin: 10px;
+      padding: 10px 20px;
+    }
+	#title {
+width: 200px;        /* 国名の表示幅を固定 */
+  text-align: left;   /* 左揃えにすると安定 */
+  white-space: nowrap;/* 折り返し防止 */
+  overflow: hidden;   /* はみ出し防止 */
+  text-overflow: ellipsis; /* 長い場合は… */
+	}
+	#titleArea {
+	  margin-top: 15px;
+	  height: 40px;              /* ← 高さ固定 */
+	  display: flex;
+	  align-items: center;
+	  justify-content: center;
+	  gap: 80px;                 /* 画像と文字の間隔 */
+	  font-size: 20px;
+	  font-weight: bold;
+
+	  /* 追加 */
+	  width: 300px;        /* ← エリア全体を固定 */
+	  margin-left: auto;
+	  margin-right: auto;
+
+	}
+	
+	#titleImage {
+  width: 48px;         /* 国旗は固定 */
+  height: 32px;
+  flex-shrink: 0;      /* 縮まない */
+  object-fit: contain;
+	}
+    #imageArea {
+	  width: 450px;
+	  height: 400px;   /* 表示エリアを固定 */
+	  margin: 0 auto;
+	  border: 2px solid #333;
+	  display: flex;
+	  align-items: center;
+	  justify-content: center;
+	}
+		
+	#imageArea img {
+	  width: 100%;
+	  height: 100%;
+	  object-fit: contain;
+	  border: none;
+	}
+  </style>
+</head>
+<body>
+
+  <h1>Sora'S kitchen ルーレット</h1>
+
+	<div id="titleArea">
+	  <img id="titleImage" src="flags/au.svg" alt="">
+	  <span id="title">オーストラリア</span>
+	</div>
+	
+	<div id="imageArea">
+	  <img id="rouletteImage" src="images/1.jpg" alt="">
+	</div>
+
+  <div>
+    <button onclick="startRoulette()">スタート</button>
+    <button onclick="stopRoulette()">ストップ</button>
+  </div>
+
+  <script>
+	const titleImageElement = document.getElementById("titleImage");
+
+	const images = [
+	  { src: "images/1.jpg", flag: "flags/au.svg", title: "オーストラリア" },
+	  { src: "images/2.jpg", flag: "flags/ru.svg", title: "ロシア" },
+	  { src: "images/3.jpg", flag: "flags/us.svg", title: "アメリカ" },
+	  { src: "images/4.jpg", flag: "flags/ca.svg", title: "カナダ" },
+	  { src: "images/5.jpg", flag: "flags/us.svg", title: "ハワイ" },
+	  { src: "images/6.jpg", flag: "flags/br.svg", title: "ブラジル" },
+	  { src: "images/7.jpg", flag: "flags/jp.svg", title: "日本" },
+	  { src: "images/8.jpg", flag: "flags/in.svg", title: "インド" },
+	  { src: "images/9.jpg", flag: "flags/it.svg", title: "イタリア" },
+	  { src: "images/10.jpg", flag: "flags/cn.svg", title: "中国" },
+	  { src: "images/11.jpg", flag: "flags/es.svg", title: "スペイン" },
+	  { src: "images/12.jpg", flag: "flags/kr.svg", title: "韓国" },
+	  { src: "images/13.jpg", flag: "flags/fr.svg", title: "フランス" }
+	];
+
+    const imgElement = document.getElementById("rouletteImage");
+    const titleElement = document.getElementById("title");
+
+const tickSound = new Audio("sounds/drumroll.mp3");
+const stopSound = new Audio("sounds/stop.mp3");
+
+tickSound.volume = 0.5;
+stopSound.volume = 0.7;
+
+    let timer = null;
+    let speed = 100;
+    let currentIndex = 0;
+    let stopping = false;
+
+    function startRoulette() {
+      if (timer) return;
+
+      titleElement.textContent = "";
+      speed = 100;
+      stopping = false;
+
+      timer = setInterval(changeImage, speed);
+    }
+
+    function stopRoulette() {
+      stopping = true;
+    }
+
+function changeImage() {
+  currentIndex = Math.floor(Math.random() * images.length);
+
+  imgElement.src = images[currentIndex].src;
+  titleElement.textContent = images[currentIndex].title;
+  titleImageElement.src = images[currentIndex].flag;
+
+  // ★ 完全停止前のみ tick を鳴らす
+  if (!stopping || speed <= 600) {
+    tickSound.currentTime = 0;
+    tickSound.play();
+  }
+
+  if (stopping) {
+    speed += 50;
+    clearInterval(timer);
+    timer = setInterval(changeImage, speed);
+
+    if (speed > 600) {
+      clearInterval(timer);
+      timer = null;
+
+      // ★ tickSound を確実に止める
+      tickSound.pause();
+      tickSound.currentTime = 0;
+
+      // 停止音
+      stopSound.currentTime = 0;
+      stopSound.play();
+    }
+  }
+}
+
+  </script>
+
+</body>
+</html>

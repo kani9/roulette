@@ -110,36 +110,37 @@
 	    const titleElement = document.getElementById("title");
 	
 	const tickSound = new Audio("sounds/drumroll.mp3");
-	const stopSound = new Audio("sounds/stop.mp3");
-	
+	tickSound.loop = true;
 	tickSound.volume = 0.5;
+
+	const stopSound = new Audio("sounds/stop.mp3");
 	stopSound.volume = 0.7;
-	
+
 	let audioUnlocked = false;
 	
-	    let timer = null;
-	    let speed = 100;
-	    let currentIndex = 0;
-	    let stopping = false;
+    let timer = null;
+    let speed = 100;
+    let currentIndex = 0;
+    let stopping = false;
 	
-		function startRoulette() {
-		  if (timer) return;
-		
-		  // iPhone用：音声アンロック
-		  if (!audioUnlocked) {
-		    tickSound.play().then(() => {
-		      tickSound.pause();
-		      tickSound.currentTime = 0;
-		      audioUnlocked = true;
-		    }).catch(() => {});
-		  }
-		
-		  titleElement.textContent = "";
-		  speed = 100;
-		  stopping = false;
-		
-		  timer = setInterval(changeImage, speed);
-		}
+	function startRoulette() {
+	  if (timer) return;
+	
+	  if (!audioUnlocked) {
+	    tickSound.play().then(() => {
+	      audioUnlocked = true;
+	    }).catch(() => {});
+	  } else {
+	    tickSound.currentTime = 0;
+	    tickSound.play();
+	  }
+	
+	  titleElement.textContent = "";
+	  speed = 100;
+	  stopping = false;
+	
+	  timer = setInterval(changeImage, speed);
+	}
 	
 	    function stopRoulette() {
 	      stopping = true;
@@ -152,11 +153,6 @@
 	  titleElement.textContent = images[currentIndex].title;
 	  titleImageElement.src = images[currentIndex].flag;
 	
-	  // ★ 完全停止前のみ tick を鳴らす
-	  if (!stopping || speed <= 600) {
-	    tickSound.currentTime = 0;
-	    tickSound.play();
-	  }
 	
 	  if (stopping) {
 	    speed += 50;

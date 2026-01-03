@@ -4,25 +4,24 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>ルーレット</title>
+	<title>画像ルーレット</title>
 	<style>
 	body {
 	      text-align: center;
 	      font-family: sans-serif;
 	    }
-		img {
-		  width: 300px;
-		  height: auto;
-		  border: 2px solid #333;
-		}
+	img {
+	  width: 300px;
+	  height: auto;
+	  border: 2px solid #333;
+	}
 	button {
 	  width: 40vw;
 	  max-width: 180px;
 	  font-size: 18px;
 	  padding: 14px 0;
 	}
-		#title {
-		
+	#title {
 	width: auto;        /* 国名の表示幅を固定 */
 	font-size: 18px;
 	  text-align: left;   /* 左揃えにすると安定 */
@@ -30,23 +29,23 @@
 	  overflow: hidden;   /* はみ出し防止 */
 	  text-overflow: ellipsis; /* 長い場合は… */
 		}
-		#titleArea {
-		  margin-top: 15px;
-		  height: 40px;              /* ← 高さ固定 */
-		  display: flex;
-		  align-items: center;
-		  justify-content: center;
-		  gap: 40px;                 /* 画像と文字の間隔 */
-		  font-size: 20px;
-		  font-weight: bold;
-	
-		  /* 追加 */
-		 width: 90vw;
-	  max-width: 450px;
-		  margin-left: auto;
-		  margin-right: auto;
-	
-		}
+
+	#titleArea {
+	  margin-top: 15px;
+	  height: 40px;              /* ← 高さ固定 */
+	  display: flex;
+	  align-items: center;
+	  justify-content: center;
+	  gap: 40px;                 /* 画像と文字の間隔 */
+	  font-size: 20px;
+	  font-weight: bold;
+
+		/* 追加 */
+		width: 90vw;
+		max-width: 450px;
+		margin-left: auto;
+		margin-right: auto;
+	}
 		
 		#titleImage {
 	  width: 48px;         /* 国旗は固定 */
@@ -116,20 +115,31 @@
 	tickSound.volume = 0.5;
 	stopSound.volume = 0.7;
 	
+	let audioUnlocked = false;
+	
 	    let timer = null;
 	    let speed = 100;
 	    let currentIndex = 0;
 	    let stopping = false;
 	
-	    function startRoulette() {
-	      if (timer) return;
-	
-	      titleElement.textContent = "";
-	      speed = 100;
-	      stopping = false;
-	
-	      timer = setInterval(changeImage, speed);
-	    }
+		function startRoulette() {
+		  if (timer) return;
+		
+		  // iPhone用：音声アンロック
+		  if (!audioUnlocked) {
+		    tickSound.play().then(() => {
+		      tickSound.pause();
+		      tickSound.currentTime = 0;
+		      audioUnlocked = true;
+		    }).catch(() => {});
+		  }
+		
+		  titleElement.textContent = "";
+		  speed = 100;
+		  stopping = false;
+		
+		  timer = setInterval(changeImage, speed);
+		}
 	
 	    function stopRoulette() {
 	      stopping = true;
@@ -171,4 +181,3 @@
 </body>
 
 </html>
-
